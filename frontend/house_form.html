@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>House Price Prediction</title>
+  </head>
+  <body>
+    <h2>House Price Prediction Form</h2>
+
+    <form id="houseForm">
+      <div>
+        <label for="area">Area (m²):</label>
+        <input type="number" id="area" name="area" step="any" required />
+      </div>
+
+      <br />
+
+      <div>
+        <label for="bedrooms">Bedrooms:</label>
+        <input type="number" id="bedrooms" name="bedrooms" required />
+      </div>
+
+      <br />
+
+      <div>
+        <label for="location">Location:</label>
+        <select id="location" name="location">
+          <option value="other" selected>Other</option>
+          <option value="hanoi">Hanoi</option>
+          <option value="hcmc">HCMC</option>
+        </select>
+      </div>
+
+      <br />
+
+      <button type="submit">Predict Price</button>
+    </form>
+
+    <h3 id="result"></h3>
+
+    <script>
+      const form = document.getElementById("houseForm");
+      const result = document.getElementById("result");
+
+      form.addEventListener("submit", async function (event) {
+        event.preventDefault();
+
+        const area = document.getElementById("area").value;
+        const bedrooms = document.getElementById("bedrooms").value;
+        const location = document.getElementById("location").value;
+
+        const url = `/predict?area=${encodeURIComponent(area)}&bedrooms=${encodeURIComponent(bedrooms)}&location=${encodeURIComponent(location)}`;
+
+        try {
+          const response = await fetch(url);
+
+          if (!response.ok) {
+            throw new Error("Failed to fetch prediction from server.");
+          }
+
+          const data = await response.json();
+
+          const formattedPrice = new Intl.NumberFormat("vi-VN").format(
+            data.predicted_price,
+          );
+
+          result.textContent = `Predicted Price: ${formattedPrice} VND`;
+        } catch (error) {
+          console.error(error);
+          result.textContent = `Error: ${error.message}`;
+        }
+      });
+    </script>
+  </body>
+</html>
