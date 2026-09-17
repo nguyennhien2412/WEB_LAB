@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Item Management</title>
+
+    <link rel="stylesheet" href="/static/style.css?v=1.0" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header>
+        <h1>Item Management</h1>
+        <p>FastAPI CRUD & House Price Prediction</p>
+      </header>
+
+      <!-- ADD / EDIT ITEM -->
+
+      <section class="card">
+        <h2 id="formTitle">Add Item</h2>
+
+        <form id="itemForm">
+          <input id="itemName" type="text" placeholder="Item name" required />
+
+          <input
+            id="itemPrice"
+            type="number"
+            placeholder="Price"
+            min="0"
+            required
+          />
+
+          <button type="submit" id="submitBtn">Add Item</button>
+
+          <button
+            type="button"
+            id="cancelBtn"
+            class="secondary hidden"
+            onclick="cancelEdit()"
+          >
+            Cancel
+          </button>
+        </form>
+      </section>
+
+      <!-- ITEMS -->
+
+      <section class="card">
+        <h2>Items</h2>
+
+        <!-- Search / Filter / Sort -->
+
+        <div class="filters">
+          <input id="searchInput" type="text" placeholder="Search..." />
+
+          <input id="minPrice" type="number" placeholder="Min price" min="0" />
+
+          <input id="maxPrice" type="number" placeholder="Max price" min="0" />
+
+          <select id="sortBy">
+            <option value="id">ID</option>
+            <option value="name">Name</option>
+            <option value="price">Price</option>
+          </select>
+
+          <select id="sortOrder">
+            <option value="asc">Ascending</option>
+            <option value="desc">Descending</option>
+          </select>
+
+          <button onclick="applyFilters()">Apply Filters</button>
+
+          <button type="button" class="secondary-btn" onclick="fetchAllItems()">
+            Fetch All
+          </button>
+        </div>
+
+        <!-- Table -->
+
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Price</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+
+          <tbody id="itemsTable"></tbody>
+        </table>
+
+        <!-- Pagination -->
+
+        <div class="pagination">
+          <button onclick="previousPage()">← Previous</button>
+
+          <span id="pageInfo"> Page 1 </span>
+
+          <button onclick="nextPage()">Next →</button>
+        </div>
+      </section>
+
+      <!-- HOUSE PRICE -->
+
+      <section class="card prediction">
+        <h2>House Price Prediction</h2>
+
+        <div class="prediction-form">
+          <input id="area" type="number" placeholder="Area (m²)" min="0.1" />
+
+          <input id="bedrooms" type="number" placeholder="Bedrooms" min="0" />
+
+          <input
+            id="distance"
+            type="number"
+            placeholder="Distance to center (km)"
+            min="0"
+          />
+
+          <button onclick="predictHousePrice()">Predict Price</button>
+        </div>
+
+        <div class="prediction-result">
+          <p>Predicted Price</p>
+
+          <strong id="predictionResult"> — </strong>
+        </div>
+      </section>
+    </div>
+
+    <script src="/static/app.js?v=1.0"></script>
+  </body>
+</html>
