@@ -18,4 +18,4 @@
 
 1. Open the terminal inside the `backend/` directory and activate the virtual environment: `.venv\Scripts\Activate.ps1`.
 2. Start the FastAPI application with the command: `uvicorn main_item:app --reload`.
-3. Open your browser and navigate to: `http://127.0.0.1:8000/static/house_form.html`.
+3. Open your browser and navigate to: `http://127.0.0.1:8000/static/index.html`.
