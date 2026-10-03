@@ -1,11 +1,11 @@
+import time
 from pathlib import Path
+from typing import Generator
 from fastapi import FastAPI, HTTPException, Query, Response, status, Request, Cookie, Depends, Header
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from fastapi.middleware.cors import CORSMiddleware
-import time
-from typing import Generator
 from starlette.middleware.sessions import SessionMiddleware
 
 
@@ -18,11 +18,11 @@ app = FastAPI()
 # app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
 
 app.add_middleware(
-        CORSMiddleware,
-            allow_origins=["http://127.0.0.1:5500"],
-            allow_methods=["*"],
-            allow_headers=["*"],
-            allow_credentials=True
+    CORSMiddleware,
+    allow_origins=["http://127.0.0.1:5500"],
+    allow_methods=["*"],
+    allow_headers=["*"],
+    allow_credentials=True
 )
 
 app.add_middleware(SessionMiddleware, secret_key="super-secret-key")
@@ -40,9 +40,11 @@ async def catch_exceptions(request: Request, call_next):
     try:
         return await call_next(request)
     except Exception as exc:
-        print(f"Unhandled error on { request.url.path}: {exc}")
-        return JSONResponse( status_code=500,
-                            content={"detail: " "Internal server error"}) 
+        print(f"Unhandled error on {request.url.path}: {exc}")
+        return JSONResponse(
+            status_code=500,
+            content={"detail": "Internal server error"}
+        )
 
 def pagination(skip: int = Query(0, ge=0), limit: int = Query(10, ge=1, le=100)):
     return {"skip": skip, "limit": limit}
@@ -101,6 +103,12 @@ _items: list[ItemPublic] = []
 _next_id: int = 1
 _cart = []
 
+def _find(item_id: int) -> ItemPublic | None:
+    for it in _items:
+        if it.id == item_id:
+            return it
+    return None
+
 # Route trả về giao diện trang chủ khi truy cập http://127.0.0.1:8000/
 @app.get("/")
 def read_root():
@@ -113,12 +121,6 @@ def count_visits(response: Response, visits: str | None = Cookie(default=None)):
     response.set_cookie(key="visits", value=str(count), httponly=True, samesite="lax")
     return {"visits": count}
 
-def _find(item_id: int) -> ItemPublic | None:
-    for it in _items:
-        if it.id == item_id:
-            return it
-    return None
-
 
 #app = FastAPI()
 #app.mount("/static", StaticFiles(directory="../frontend"), name="static")
@@ -129,13 +131,8 @@ def read_me():
     return "Welcome!"
 
 
-# GET AN ITEM
-@app.get("/items/{item_id}", response_model=ItemPublic)
-def read_item(item_id: int):
-    item = _find(item_id)
-    if item is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail={"error": "Item not found"})
-
+# GET AN ITEM 
+def read_item(item: ItemPublic = Depends(get_item_or_404)):
     return item
 
 # GET ITEMS
@@ -154,7 +151,7 @@ def read_items(
         limit=limit
     )
 
-# GET ITEMS WITH FILTERING,SEARCHING AND SORTING
+# GET ITEMS WITH FILTERING, SEARCHING AND SORTING
 @app.get("/items/search", response_model=ItemListResponse)
 def search_items(
     page: dict = Depends(pagination),
@@ -212,7 +209,7 @@ def update_item(data: ItemCreate, item: ItemPublic = Depends(get_item_or_404)):
     _items[index] = updateValue
     return updateValue
 
-#UPDATE AN ITEM PARTIALLY (PATCH)
+# UPDATE AN ITEM PARTIALLY (PATCH)
 @app.patch("/items/{item_id}", response_model=ItemPublic)
 def patch_item(data: ItemUpdate, item: ItemPublic = Depends(get_item_or_404)):
     if data.name is not None and data.name.lower() != item.name.lower():
