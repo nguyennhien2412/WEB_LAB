@@ -3,7 +3,7 @@
 ## How to Run
 
 1. Open the terminal inside the `backend/` directory and activate the virtual environment: `.venv\Scripts\Activate.ps1`.
-2. Start the FastAPI application with the command: `uvicorn main:app --reload`.
+2. Start the FastAPI application with the command: `uvicorn main_house:app --reload`.
 3. Open your browser and navigate to: `http://127.0.0.1:8000/static/house_form.html`.
 
 ## Task Answers (Task 3 & 5)
@@ -19,3 +19,22 @@
 1. Open the terminal inside the `backend/` directory and activate the virtual environment: `.venv\Scripts\Activate.ps1`.
 2. Start the FastAPI application with the command: `uvicorn main_item:app --reload`.
 3. Open your browser and navigate to: `http://127.0.0.1:8000/static/index.html`.
+
+# PostgreSQL & SQLModel Lab
+
+This folder contains my completed submission for the **PostgreSQL & SQLModel Lab**.
+
+### Submission Contents
+
+- **Source code:** `app/`
+- **Database migrations:** `migrations/`
+- **Alembic configuration:** `alembic.ini`
+- **Written answers:** `answers.md`
+- **Checkpoint screenshots:** `screenshots/lab_checkpoints.pdf`
+
+### Notes
+
+- All files related to this lab are contained within the **`hero-api/`** folder.
+- The required checkpoint screenshots have been combined into **one PDF file** for convenience.
+- To view the checkpoint screenshots, open `screenshots/lab_checkpoints.pdf` with a PDF viewer such as **Google Chrome, Microsoft Edge, or Adobe Acrobat**.
+- The written answers are provided separately in `answers.md`.
