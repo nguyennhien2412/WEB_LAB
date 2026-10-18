@@ -9,14 +9,13 @@ from alembic import context
 # access to the values within the .ini file in use.
 config = context.config
 
-import os
 from sqlmodel import SQLModel
-from app import models  # noqa: F401
 
-config.set_main_option(
-    "sqlalchemy.url",
-    os.environ["DATABASE_URL"],
-)
+from app import models  # noqa: F401  (import so the tables are registered)
+from app.database import DATABASE_URL
+
+# Same URL as the app: DATABASE_URL from the environment, SQLite fallback
+config.set_main_option("sqlalchemy.url", DATABASE_URL)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

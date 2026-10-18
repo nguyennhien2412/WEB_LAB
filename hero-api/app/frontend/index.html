@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Heroes API</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      table {
+        border-collapse: collapse;
+        margin-top: 20px;
+        width: 100%;
+        max-width: 600px;
+      }
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+      .form-group {
+        margin-bottom: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Heroes Directory</h1>
+
+    <!-- Form tạo Hero -->
+    <form id="heroForm">
+      <div class="form-group">
+        <label>Name:</label>
+        <input type="text" id="name" required />
+      </div>
+      <div class="form-group">
+        <label>Secret Name:</label>
+        <input type="text" id="secret_name" required />
+      </div>
+      <div class="form-group">
+        <label>Age:</label>
+        <input type="number" id="age" />
+      </div>
+      <div class="form-group">
+        <label>Status:</label>
+        <select id="status">
+          <option value="active">Active</option>
+          <option value="retired">Retired</option>
+        </select>
+      </div>
+      <button type="submit">Create Hero</button>
+    </form>
+
+    <!-- Bảng hiển thị danh sách Hero -->
+    <table id="heroes">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Dữ liệu sẽ được render vào đây bằng JS -->
+      </tbody>
+    </table>
+
+    <script>
+      // Cấu hình URL gọi tới backend (chú ý có tiền tố /api/v1)
+      const API = "http://127.0.0.1:8000/api/v1";
+      const tbody = document.querySelector("#heroes tbody");
+      const form = document.querySelector("#heroForm");
+
+      // Hàm tải danh sách Hero[cite: 28]
+      async function loadHeroes() {
+        const res = await fetch(`${API}/heroes?limit=50`);
+        const heroes = await res.json();
+
+        tbody.replaceChildren(); // Xóa dữ liệu cũ
+
+        for (const h of heroes) {
+          const tr = tbody.insertRow();
+          // Dùng textContent để bảo mật, chống XSS thay vì innerHTML[cite: 28, 46]
+          for (const v of [h.id, h.name, h.age ?? "-", h.status]) {
+            tr.insertCell().textContent = v;
+          }
+        }
+      }
+
+      // Hàm gửi API tạo Hero mới[cite: 29]
+      async function createHero(data) {
+        const res = await fetch(`${API}/heroes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data),
+        });
+
+        if (res.status === 201) {
+          await loadHeroes(); // Tải lại bảng nếu thành công[cite: 29]
+          form.reset(); // Xóa form
+        } else if (res.status === 422) {
+          const err = await res.json();
+          // Lấy chi tiết vị trí (loc) và thông báo lỗi (msg) từ Pydantic để alert[cite: 29]
+          alert(err.detail.map((d) => `${d.loc.at(-1)}: ${d.msg}`).join("\n"));
+        } else {
+          alert(`Error ${res.status}`);
+        }
+      }
+
+      // Xử lý sự kiện submit form
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+
+        const data = {
+          name: document.getElementById("name").value,
+          secret_name: document.getElementById("secret_name").value,
+          status: document.getElementById("status").value,
+        };
+
+        const ageVal = document.getElementById("age").value;
+        if (ageVal !== "") {
+          data.age = parseInt(ageVal);
+        }
+
+        createHero(data);
+      });
+
+      // Gọi loadHeroes ngay khi mở trang
+      loadHeroes();
+    </script>
+  </body>
+</html>

@@ -1,109 +1,37 @@
 from sqlmodel import Session, SQLModel, select
 
 from app.database import engine
-from app import models
+from app.models import Hero, Mission, Team
 
 
-def seed_database():
-    # 1. Create tables if they do not exist
+def seed():
     SQLModel.metadata.create_all(engine)
-
     with Session(engine) as session:
-        # 2. Check whether database has already been seeded
-        existing_team = session.exec(
-            select(models.Team)
-        ).first()
-
-        if existing_team:
-            print("Database already seeded. Nothing to do.")
+        if session.exec(select(Team)).first():
+            print("Database already seeded - nothing to do.")
             return
 
-        # 3. Create missions
-        battle_of_sokovia = models.Mission(
-            title="Battle of Sokovia"
-        )
+        avengers = Team(name="Avengers", headquarters="New York")
+        xmen = Team(name="X-Men", headquarters="Westchester")
+        sokovia = Mission(title="Battle of Sokovia")
+        sentinels = Mission(title="Stop the Sentinels")
 
-        battle_of_new_york = models.Mission(
-            title="Battle of New York"
-        )
-
-        # 4. Create teams
-        avengers = models.Team(
-            name="Avengers",
-            headquarters="New York",
-        )
-
-        justice_league = models.Team(
-            name="Justice League",
-            headquarters="Metropolis",
-        )
-
-        # 5. Create heroes using relationships
-        iron_man = models.Hero(
-            name="Iron Man",
-            age=35,
-            secret_name="Tony Stark",
-            team=avengers,
-            missions=[battle_of_sokovia, battle_of_new_york],
-        )
-
-        captain_america = models.Hero(
-            name="Captain America",
-            age=100,
-            secret_name="Steve Rogers",
-            team=avengers,
-            missions=[battle_of_sokovia],
-        )
-
-        thor = models.Hero(
-            name="Thor",
-            age=1500,
-            secret_name="Thor Odinson",
-            team=avengers,
-            missions=[battle_of_sokovia],
-        )
-
-        hulk = models.Hero(
-            name="Hulk",
-            age=40,
-            secret_name="Bruce Banner",
-            team=avengers,
-            missions=[battle_of_sokovia],
-        )
-
-        black_widow = models.Hero(
-            name="Black Widow",
-            age=35,
-            secret_name="Natasha Romanoff",
-            team=avengers,
-            missions=[battle_of_new_york],
-        )
-
-        superman = models.Hero(
-            name="Superman",
-            age=35,
-            secret_name="Clark Kent",
-            team=justice_league,
-            missions=[battle_of_new_york],
-        )
-
-        # 6. Add teams
-        session.add(avengers)
-        session.add(justice_league)
-
-        # 7. Add heroes
-        session.add(iron_man)
-        session.add(captain_america)
-        session.add(thor)
-        session.add(hulk)
-        session.add(black_widow)
-        session.add(superman)
-
-        # 8. Commit everything
+        session.add_all([
+            Hero(name="Tony", age=45, secret_name="Iron Man", power="powered armor",
+                 team=avengers, missions=[sokovia]),
+            Hero(name="Natasha", age=35, secret_name="Black Widow", power="espionage",
+                 team=avengers, missions=[sokovia]),
+            Hero(name="Steve", age=105, secret_name="Captain America", power="super soldier",
+                 team=avengers),
+            Hero(name="Logan", age=150, secret_name="Wolverine", power="healing factor",
+                 team=xmen, missions=[sentinels]),
+            Hero(name="Jean", age=30, secret_name="Phoenix", power="telekinesis",
+                 team=xmen, missions=[sentinels]),
+            Hero(name="Peter", age=16, secret_name="Spider-Man", power="wall-crawling"),
+        ])
         session.commit()
-
-        print("Database seeded successfully.")
+        print("Seeded 2 teams, 6 heroes, 2 missions.")
 
 
 if __name__ == "__main__":
-    seed_database()
+    seed()

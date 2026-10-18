@@ -38,3 +38,21 @@ This folder contains my completed submission for the **PostgreSQL & SQLModel Lab
 - The required checkpoint screenshots have been combined into **one PDF file** for convenience.
 - To view the checkpoint screenshots, open `screenshots/lab_checkpoints.pdf` with a PDF viewer such as **Google Chrome, Microsoft Edge, or Adobe Acrobat**.
 - The written answers are provided separately in `answers.md`.
+
+### Run it
+
+```bash
+python -m venv .venv
+source .venv/bin/activate              # Windows: .venv\Scripts\activate
+pip install -r requirements.txt
+
+# PostgreSQL (user/db created as in Part 0 of the lab)
+export DATABASE_URL="postgresql+psycopg://app:secret@localhost:5432/appdb"
+# ...or leave it unset to use SQLite (./app.db)
+
+alembic upgrade head                   # create the schema
+python -m app.seed                     # sample data (safe to run twice)
+fastapi dev app/main.py                # http://127.0.0.1:8000/docs
+```
+
+Starting from a database whose tables were created by `create_all` (Parts 4–8 of the lab)? Either drop them first, or mark the database as up to date with `alembic stamp head`.
