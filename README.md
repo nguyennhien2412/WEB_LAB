@@ -39,9 +39,10 @@ This folder contains my completed submission for the **PostgreSQL & SQLModel Lab
 - To view the checkpoint screenshots, open `screenshots/lab_checkpoints.pdf` with a PDF viewer such as **Google Chrome, Microsoft Edge, or Adobe Acrobat**.
 - The written answers are provided separately in `answers.md`.
 
-### Run it
+### Run it (Week 10 Lab)
 
 ```bash
+cd hero-api
 python -m venv .venv
 source .venv/bin/activate              # Windows: .venv\Scripts\activate
 pip install -r requirements.txt
